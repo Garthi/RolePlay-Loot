@@ -1,0 +1,16 @@
+[
+{
+  "modid": "roleplayloot",
+  "name": "RolePlay-Loot",
+  "description": "RolePlay-Loot mod.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Garthi"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
