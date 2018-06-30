@@ -5,12 +5,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.ItemFishedEvent;
-import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.apache.logging.log4j.Level;
 
 import java.util.List;
 import java.util.Random;
@@ -36,34 +34,14 @@ public class CommonProxy
     @SubscribeEvent
     public void fishingLoot(ItemFishedEvent event)
     {
-        String playerName = event.getEntityPlayer().getDisplayName().getFormattedText();
         List<ItemStack> drops = event.getDrops();
 
-        for (ItemStack drop: drops) {
-            FMLLog.log.log(Level.INFO, String.format(
-                    "<RRS> Fished: %1$s have dropped %2$dx %3$s",
-                    playerName,
-                    drop.getCount(),
-                    drop.getUnlocalizedName()
-            ));
-            
-            if (!drop.getUnlocalizedName().startsWith("item.fish.")
-                    && !drop.getUnlocalizedName().equals("item.nameTag")
-                    && !drop.getUnlocalizedName().equals("item.stick")
-                    && !drop.getUnlocalizedName().equals("tile.waterlily"))
-            {
-                // TODO drop a stick
-                drop.setCount(0);
-            /*} else if (drop.getUnlocalizedName().startsWith("item.fish.")) {
-                Random rand = new Random();
-                if (rand.nextInt(3) != 0) {
-                    // TODO drop a stick
-                    drop.setCount(0);
-                } else {
-                    FMLLog.log.log(Level.INFO, "No Fishing Drop :-(");
-                }*/
-            }
-        }
+        drops.stream().filter(drop -> !drop.getUnlocalizedName().startsWith("item.fish.")
+                && !drop.getUnlocalizedName().equals("item.nameTag")
+                && !drop.getUnlocalizedName().equals("item.stick")
+                && !drop.getUnlocalizedName().equals("tile.waterlily")).forEach(drop -> {
+            drop.setCount(0);
+        });
         
     }
 
@@ -76,13 +54,6 @@ public class CommonProxy
         for (EntityItem drop: drops) {
             
             ItemStack dropItem = drop.getItem();
-            
-            FMLLog.log.log(Level.INFO, String.format(
-                    "<RPL> Monster: %1$s have dropped %2$dx %3$s",
-                    entityName,
-                    dropItem.getCount(),
-                    dropItem.getUnlocalizedName()
-            ));
             
             switch (entityName) {
                 case "Zombie":
