@@ -31,7 +31,6 @@ public class RolePlayLoot
     public void preInit(FMLPreInitializationEvent event)
     {
         proxy.preInit(event);
-        MinecraftForge.EVENT_BUS.register(proxy);
     }
 
     @Mod.EventHandler
