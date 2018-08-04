@@ -16,7 +16,7 @@ public class RolePlayLoot
 {
     public static final String ID = "roleplayloot";
     public static final String NAME = "RolePlay-Loot";
-    public static final String VERSION = "0.1.1";
+    public static final String VERSION = "0.2";
 
     @SidedProxy(
             clientSide = "com.role.play.loot.proxy.ClientProxy",
