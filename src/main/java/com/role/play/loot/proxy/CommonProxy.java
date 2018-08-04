@@ -2,13 +2,17 @@ package com.role.play.loot.proxy;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.event.entity.player.FillBucketEvent;
 import net.minecraftforge.event.entity.player.ItemFishedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
 import java.util.List;
 import java.util.Random;
@@ -125,5 +129,79 @@ public class CommonProxy
                     break;
             }
         }
+    }
+    
+    @SubscribeEvent
+    public void fillBucket(FillBucketEvent event)
+    {
+        ItemStack filledBucket = event.getFilledBucket();
+        if (filledBucket != null) {
+            if (isBucket(filledBucket)) {
+                removeLiquid(filledBucket);
+            }
+        }
+        
+        ItemStack currentItem = event.getEntityPlayer().inventory.getCurrentItem();
+        if (currentItem != null) {
+            if (isBucket(currentItem)) {
+                removeLiquid(currentItem);
+            }
+        }
+    }
+    
+    @SubscribeEvent
+    public void onEntityItemPickup(EntityItemPickupEvent event)
+    {
+        ItemStack item = event.getItem().getItem();
+        if (isBucket(item)) {
+            removeLiquid(item);
+        }
+    }
+    
+    @SubscribeEvent
+    public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event)
+    {
+        event.player.inventory.mainInventory.stream().filter(this::isBucket).forEach(this::removeLiquid);
+    }
+    
+    private void removeLiquid(ItemStack item)
+    {
+        if (item.getUnlocalizedName().equals("item.ceramics.clay_bucket")) {
+            item.setTagCompound(null);
+            return;
+        }
+
+        item.setCount(0);
+    }
+    
+    private boolean isBucket(ItemStack item)
+    {
+        if (item.getUnlocalizedName().equals("item.bucket")
+                || item.getUnlocalizedName().equals("item.ceramics.clay_bucket")
+                || item.getUnlocalizedName().equals("item.forge.bucketFilled"))
+        {
+            if (!item.hasTagCompound()) {
+                return false;
+            }
+            
+            NBTTagCompound tag;
+            
+            assert item.getTagCompound() != null;
+            if (item.getTagCompound().hasKey("fluids")) {
+                tag = item.getTagCompound().getCompoundTag("fluids");
+            } else {
+                tag = item.getTagCompound();
+            }
+
+            if (!tag.hasKey("FluidName")) {
+                return false;
+            }
+
+            if (tag.getString("FluidName").equals("hot_spring_water")) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }
